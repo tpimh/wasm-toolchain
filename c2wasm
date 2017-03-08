@@ -1,0 +1,49 @@
+#!/bin/sh
+
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+CLANG="$SCRIPTPATH"/llvm/build/bin/clang
+LLC="$SCRIPTPATH"/llvm/build/bin/llc
+S2WASM="$SCRIPTPATH"/binaryen/build/bin/s2wasm
+WAST2WASM="$SCRIPTPATH"/wabt/build/wast2wasm
+
+if [ ! -x $CLANG ] || [ ! -x $LLC ] || [ ! -x $S2WASM ] || [ ! -x $WAST2WASM ]; then
+  echo Run build-all.sh first!
+  exit 255
+fi
+
+FILENAME="$1"
+BASE="${FILENAME%.*}"
+EXT="${FILENAME##*.}"
+
+if [ "$#" -ne 1 ] || [ ! "$EXT" = "c" ]; then
+  echo "Usage: $0 source.c" >&2
+  exit 1
+fi
+
+$CLANG -emit-llvm --target=wasm32 -S $BASE.c -o $BASE.ll
+if [ "$?" -ne 0 ]; then
+  echo "clang failed!" >&2
+  exit 2
+fi
+
+$LLC -march=wasm32 -filetype=asm $BASE.ll -o $BASE.s
+if [ "$?" -ne 0 ]; then
+  echo "llc failed!" >&2
+  exit 2
+fi
+
+$S2WASM $BASE.s -o $BASE.wast
+if [ "$?" -ne 0 ]; then
+  echo "s2wasm failed!" >&2
+  exit 2
+fi
+
+$WAST2WASM $BASE.wast -o $BASE.wasm
+if [ "$?" -ne 0 ]; then
+  echo "wast2wasm failed!" >&2
+  exit 2
+fi
+
+rm $BASE.ll $BASE.s $BASE.wast
