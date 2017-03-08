@@ -5,10 +5,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Count</title>
   <script type='text/javascript'>
-    fetch("sample.wasm").then(res => res.arrayBuffer()).then(buffer => {
-      let module = Wasm.instantiateModule(new Uint8Array(buffer), {});
+    fetch('sample.wasm').then(res => res.arrayBuffer()).then(buffer => WebAssembly.compile(buffer)).then(module => {
+      const instance = new WebAssembly.Instance(module);
       document.getElementById("btn").addEventListener("click", function() {
-        this.value = module.exports.count();
+        this.value = instance.exports.count();
       }, false);
     });
   </script>
