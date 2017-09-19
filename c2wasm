@@ -6,9 +6,9 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 CLANG="$SCRIPTPATH"/llvm/build/bin/clang
 LLC="$SCRIPTPATH"/llvm/build/bin/llc
 S2WASM="$SCRIPTPATH"/binaryen/build/bin/s2wasm
-WAST2WASM="$SCRIPTPATH"/wabt/build/wast2wasm
+WAT2WASM="$SCRIPTPATH"/wabt/build/wat2wasm
 
-if [ ! -x $CLANG ] || [ ! -x $LLC ] || [ ! -x $S2WASM ] || [ ! -x $WAST2WASM ]; then
+if [ ! -x $CLANG ] || [ ! -x $LLC ] || [ ! -x $S2WASM ] || [ ! -x $WAT2WASM ]; then
   echo Run build-all.sh first!
   exit 255
 fi
@@ -40,9 +40,9 @@ if [ "$?" -ne 0 ]; then
   exit 2
 fi
 
-$WAST2WASM $BASE.wast -o $BASE.wasm
+$WAT2WASM $BASE.wast -o $BASE.wasm
 if [ "$?" -ne 0 ]; then
-  echo "wast2wasm failed!" >&2
+  echo "wat2wasm failed!" >&2
   exit 2
 fi
 
