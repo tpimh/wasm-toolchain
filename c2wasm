@@ -34,16 +34,16 @@ if [ "$?" -ne 0 ]; then
   exit 2
 fi
 
-$S2WASM $BASE.s -o $BASE.wast
+$S2WASM $BASE.s -o $BASE.wat
 if [ "$?" -ne 0 ]; then
   echo "s2wasm failed!" >&2
   exit 2
 fi
 
-$WAT2WASM $BASE.wast -o $BASE.wasm
+$WAT2WASM $BASE.wat -o $BASE.wasm
 if [ "$?" -ne 0 ]; then
   echo "wat2wasm failed!" >&2
   exit 2
 fi
 
-rm $BASE.ll $BASE.s $BASE.wast
+rm $BASE.ll $BASE.s $BASE.wat
